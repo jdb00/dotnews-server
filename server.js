@@ -9,6 +9,8 @@ var connectionString = 'mongodb://admin:password321@cluster0-shard-00-00.jqrc6.m
 
 
 var Article = require('./article-model')
+var Category = require('./category-model')
+
 
 mongoose.connect(connectionString,{ useNewUrlParser: true })
 var  db = mongoose.connection
@@ -73,8 +75,70 @@ router.put('/articles/:id', (req, res) => {
   })
 })
 
-//delete article by id - soft or hard delete?
+//delete article by id (hard delete)
+router.delete('/articles/:id', (req, res) => {
+ 
+  Article.deleteOne({ id: req.params.id })
+  .then(() => {
+      res.json('deleted');
+  })
+})
 
+
+//Category CRUD
+//GET
+
+router.get('/categories', (req, res) => {
+  Category.find()
+  .then((categories) => {
+      res.json(categories);
+  })
+})
+
+//get category by id
+router.get('/categories/:id', (req, res) => {
+  Category.findOne({id:req.params.id})
+  .then((categories) => {
+      res.json(categories);
+  })
+})
+
+//post new categories
+router.post('/categories', (req, res) => {
+  var category = new Category()
+  category.id = Date.now()
+  var data = req.body
+
+  Object.assign(category, data)
+
+  category.save()
+  .then((category) => {
+    res.json(category)
+  })
+})
+
+//edit existing category by id
+router.put('/categories/:id', (req, res) => {
+ 
+  Category.findOne({id:req.params.id})
+  .then((category) => {
+      var data = req.body
+      Object.assign(category,data)
+      return category.save()   
+  })
+  .then((category) => {
+       res.json(category)
+  })
+})
+
+//delete category by id - soft or hard delete?
+router.delete('/categories/:id', (req, res) => {
+ 
+  Category.deleteOne({ id: req.params.id })
+  .then(() => {
+      res.json('deleted');
+  })
+})
 
 //use server to serve route
 app.use('/api', router);
