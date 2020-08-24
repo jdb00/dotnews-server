@@ -8,6 +8,7 @@ const ArticleSchema = new Schema(
     title: String,
     author: String,
     source: String,
+    category_id: Number,
     content: String,
     timestamp: String,
     photo: String,
